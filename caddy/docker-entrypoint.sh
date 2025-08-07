@@ -2,7 +2,7 @@
 
 set -e
 
-TEMPLATE="/config/Caddyfile.template"
+TEMPLATE="/etc/caddy/Caddyfile.template"
 OUTPUT="/etc/caddy/Caddyfile"
 
 echo "[INFO] Generating Caddyfile from template using N8N_HOST=${N8N_HOST}"

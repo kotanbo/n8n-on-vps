@@ -29,7 +29,7 @@ services:
       - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
       - N8N_HOST=${N8N_HOST} # Webhook 等の生成 URL 用
       - N8N_PORT=5678
-      - N8N_PROTOCOL=${N8N_PROTOCOL}
+      - N8N_PROTOCOL=https
       - WEBHOOK_URL=https://${N8N_HOST}/ # 外部サービスと Webhook 連携する際に使用される URL
       - NODE_ENV=production # 本番用挙動（キャッシュやログ等が最適化される）
       - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
