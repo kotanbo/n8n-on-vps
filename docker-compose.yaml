@@ -1,9 +1,21 @@
 services:
-  n8n:
-    image: n8nio/n8n
+  caddy:
+    build:
+      context: ./caddy
     restart: unless-stopped # VPS 再起動や障害時には自動復旧するが、手動停止は再起動しない
     ports:
-      - "5678:5678" # http://localhost:5678
+      - "80:80"
+      - "443:443"
+    environment:
+      - N8N_HOST=${N8N_HOST}
+    volumes:
+      - caddy_data:/data
+
+  n8n:
+    image: n8nio/n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678" # N8N_PORT と同じ
     environment:
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=db
@@ -18,12 +30,13 @@ services:
       - N8N_HOST=${N8N_HOST} # Webhook 等の生成 URL 用
       - N8N_PORT=5678
       - N8N_PROTOCOL=${N8N_PROTOCOL}
-      - WEBHOOK_TUNNEL_URL=${WEBHOOK_TUNNEL_URL} # Webhook で外部サービスと連携する際の URL
+      - WEBHOOK_URL=https://${N8N_HOST}/ # 外部サービスと Webhook 連携する際に使用される URL
       - NODE_ENV=production # 本番用挙動（キャッシュやログ等が最適化される）
-      - GENERIC_TIMEZONE=Asia/Tokyo
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
     volumes:
       # コンテナ内の設定/実行ログ/認証情報等を永続化
       - n8n_data:/home/node/.n8n
+      - ./local_files:/files
     depends_on:
       # PostgreSQL コンテナが起動するまで待つ（起動順依存）
       - db
@@ -60,5 +73,6 @@ services:
       -c log_min_duration_statement=500
 
 volumes:
+  caddy_data:
   n8n_data:
   postgres_data:

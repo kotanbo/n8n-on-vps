@@ -1,2 +1,4 @@
 .DS_Store
 .env
+local_files/*
+!local_files/.gitkeep

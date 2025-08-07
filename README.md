@@ -18,4 +18,5 @@
 
 ## 構築
 
+- [n8n-docker-caddy](https://github.com/n8n-io/n8n-hosting/tree/main/docker-caddy) を元に構築
 - 参考：https://zenn.dev/digilaweb/articles/d2918deeeb5c25
