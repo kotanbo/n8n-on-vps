@@ -4,7 +4,7 @@
 
 - 自ホストでの提供は NG
 - クライアント所有のサーバーにホストすれば無料
-    - Docker Compose で簡単に構築できるようにしておくのがシンプル？
+    - 無料では利用できない機能：https://docs.n8n.io/hosting/community-edition-features/
 - 参考：https://www.adcal-inc.com/column/n8n-commercial-use/
 
 ## データベース
@@ -22,4 +22,9 @@
 https://community.n8n.io/t/switching-login-mode-email-vs-basic-auth-on-self-hosted-n8n/101527
 - Basic 認証は削除され、オーナーアカウントでサインイン
     - https://docs.n8n.io/hosting/configuration/user-management-self-hosted/
+- オーナーアカウントはメンバーのワークフローを上書きする可能性あり
+    - ファイルの排他制御のようなものはないみたい
+    - https://docs.n8n.io/user-management/best-practices/
+- セキュリティ
+    - 公開 API を利用しないなら無効：https://docs.n8n.io/hosting/securing/disable-public-api/
 - 参考：https://zenn.dev/digilaweb/articles/d2918deeeb5c25
