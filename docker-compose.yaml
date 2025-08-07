@@ -1,0 +1,64 @@
+services:
+  n8n:
+    image: n8nio/n8n
+    restart: unless-stopped # VPS 再起動や障害時には自動復旧するが、手動停止は再起動しない
+    ports:
+      - "5678:5678" # http://localhost:5678
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=db
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=n8npass
+      - N8N_BASIC_AUTH_ACTIVE=true # BASIC 認証を有効化
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - N8N_HOST=${N8N_HOST} # Webhook 等の生成 URL 用
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=${N8N_PROTOCOL}
+      - WEBHOOK_TUNNEL_URL=${WEBHOOK_TUNNEL_URL} # Webhook で外部サービスと連携する際の URL
+      - NODE_ENV=production # 本番用挙動（キャッシュやログ等が最適化される）
+      - GENERIC_TIMEZONE=Asia/Tokyo
+    volumes:
+      # コンテナ内の設定/実行ログ/認証情報等を永続化
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      # PostgreSQL コンテナが起動するまで待つ（起動順依存）
+      - db
+
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=n8n
+      - POSTGRES_USER=n8n
+      - POSTGRES_PASSWORD=n8npass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # メモリ 1 〜 2GB VPS を想定したチューニング
+    # max_connections: 最大接続数（n8n はそこまで多くないので 50 で十分）
+    # shared_buffers: PostgreSQL メモリキャッシュ（物理メモリの 1/8 〜 1/4 が目安）
+    # effective_cache_size: OS 側のファイルキャッシュ推定値（クエリ最適化に使う）
+    # work_mem: クエリ中の JOIN やソートに使われる一時メモリ（多すぎ注意）
+    # maintenance_work_mem: VACUUM やインデックス作成時のバッファ
+    # checkpoint_completion_target: 書き込みピークを避ける調整（ディスク I/O 平滑化）
+    # wal_buffers: WAL バッファサイズ（トランザクション記録用）
+    # default_statistics_target: 統計精度（クエリ最適化に影響）
+    # log_min_duration_statement: 実行時間が500ms超のSQLをログ出力（パフォーマンス分析用）
+    command: >
+      postgres
+      -c max_connections=50
+      -c shared_buffers=256MB
+      -c effective_cache_size=512MB
+      -c work_mem=4MB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=4MB
+      -c default_statistics_target=100
+      -c log_min_duration_statement=500
+
+volumes:
+  n8n_data:
+  postgres_data:
