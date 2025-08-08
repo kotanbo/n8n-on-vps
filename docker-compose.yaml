@@ -49,6 +49,8 @@ services:
       - POSTGRES_PASSWORD=n8npass
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - web
     # メモリ 1 〜 2GB VPS を想定したチューニング
     # max_connections: 最大接続数（n8n はそこまで多くないので 50 で十分）
     # shared_buffers: PostgreSQL メモリキャッシュ（物理メモリの 1/8 〜 1/4 が目安）
