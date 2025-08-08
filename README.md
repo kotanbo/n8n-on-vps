@@ -19,7 +19,6 @@
 ## 構築
 
 - [n8n-docker-caddy](https://github.com/n8n-io/n8n-hosting/tree/main/docker-caddy) を元に構築
-https://community.n8n.io/t/switching-login-mode-email-vs-basic-auth-on-self-hosted-n8n/101527
 - Basic 認証は削除され、オーナーアカウントでサインイン
     - https://docs.n8n.io/hosting/configuration/user-management-self-hosted/
 - オーナーアカウントはメンバーのワークフローを上書きする可能性あり
