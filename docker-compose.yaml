@@ -1,21 +1,7 @@
 services:
-  caddy:
-    build:
-      context: ./caddy
-    restart: unless-stopped # VPS 再起動や障害時には自動復旧するが、手動停止は再起動しない
-    ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      - N8N_HOST=${N8N_HOST}
-    volumes:
-      - caddy_data:/data
-
   n8n:
     image: n8nio/n8n
-    restart: unless-stopped
-    ports:
-      - "5678:5678" # N8N_PORT と同じ
+    restart: unless-stopped # VPS 再起動や障害時には自動復旧するが、手動停止は再起動しない
     environment:
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=db
@@ -37,6 +23,22 @@ services:
     depends_on:
       # PostgreSQL コンテナが起動するまで待つ（起動順依存）
       - db
+    networks:
+      - web
+
+  caddy:
+    build:
+      context: ./caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - N8N_HOST=${N8N_HOST}
+    volumes:
+      - caddy_data:/data
+    networks:
+      - web
 
   db:
     image: postgres:15
@@ -73,3 +75,7 @@ volumes:
   caddy_data:
   n8n_data:
   postgres_data:
+
+networks:
+  web:
+    driver: bridge
