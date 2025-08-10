@@ -1,6 +1,19 @@
-${N8N_HOST} {
+${N8N_DOMAIN} {
     reverse_proxy n8n:5678 {
         flush_interval -1
     }
-    ${TLS_BLOCK}
+}
+
+localhost {
+    reverse_proxy n8n:5678 {
+        flush_interval -1
+    }
+    tls internal
+}
+
+*.localhost {
+    reverse_proxy n8n:5678 {
+        flush_interval -1
+    }
+    tls internal
 }
