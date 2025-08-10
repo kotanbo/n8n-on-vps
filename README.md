@@ -1,29 +1,65 @@
-# n8n を VPS 上に構築
+# n8n 構築
 
-## 商用利用
+n8n を Docker Compose で VPS または localhost に構築
 
-- 自ホストでの提供は NG
-- クライアント所有のサーバーにホストすれば無料
-    - 無料では利用できない機能：https://docs.n8n.io/hosting/community-edition-features/
-- 参考：https://www.adcal-inc.com/column/n8n-commercial-use/
+## 前提条件
 
-## データベース
+- Docker インストール済み
 
-- SQLite または PostgreSQL
-    - SQLite は同時書き込みが弱いためか "10 ～ 15 の同時ワークフローを処理" に留まるとのこと
-        - 多数動かすのであれば PostgreSQL
-        - PostgreSQL であればメモリがボトルネックになりそう
-        - VPS のスペック（メモリ）次第でどちらか選ぶ
-    - 参考：https://community.n8n.io/t/n8n-with-sqlite-postgresql-or-supabase-three-installation-options-compared/118201
+## セットアップ手順
 
-## 構築
+### 1. 環境設定ファイルの準備
 
-- [n8n-docker-caddy](https://github.com/n8n-io/n8n-hosting/tree/main/docker-caddy) を元に構築
-- Basic 認証は削除され、オーナーアカウントでサインイン
-    - https://docs.n8n.io/hosting/configuration/user-management-self-hosted/
-- オーナーアカウントはメンバーのワークフローを上書きする可能性あり
-    - ファイルの排他制御のようなものはないみたい
-    - https://docs.n8n.io/user-management/best-practices/
-- セキュリティ
-    - 公開 API を利用しないなら無効：https://docs.n8n.io/hosting/securing/disable-public-api/
-- 参考：https://zenn.dev/digilaweb/articles/d2918deeeb5c25
+`.env.example` をコピーして `.env` ファイルを作成
+
+```bash
+cp .env.example .env
+```
+
+### 2. 環境変数の設定
+
+`.env` ファイルを編集して必要な値を設定
+
+#### 設定項目の説明
+
+- `N8N_ENCRYPTION_KEY`: データの暗号化に使用するキー
+- `N8N_DOMAIN`: n8n にアクセスするドメイン名
+- `GENERIC_TIMEZONE`: タイムゾーン設定（デフォルト: Asia/Tokyo）
+
+#### 補足的な設定
+
+- `N8N_LOG_LEVEL=debug`: デバッグ時に追加
+
+#### 暗号化キーの生成
+
+暗号化キーのコマンド例
+
+```bash
+openssl rand -hex 16
+```
+
+または
+
+```bash
+uuidgen
+```
+
+### 3. n8n 起動・停止
+
+起動
+
+```bash
+docker compose up -d
+```
+
+起動確認
+
+```bash
+docker compose ps
+```
+
+サービス停止
+
+```bash
+docker compose down
+```
